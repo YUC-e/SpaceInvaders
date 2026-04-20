@@ -45,6 +45,11 @@ public class GameController {
             public void actionPerformed(ActionEvent e) {
                 model.update();
                 view.repaint();
+
+                // Stop the game loop when the game is over
+                if (model.isGameOver()) {
+                    gameLoop.stop();
+                }
             }
         });
         gameLoop.start();

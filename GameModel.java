@@ -163,6 +163,23 @@ public class GameModel {
         return lives;
     }
 
+    public boolean isGameOver() {
+        if (lives <= 0) {
+            return true; // Player lost all lives
+        }
+
+        // Check if all aliens are destroyed
+        for (Alien[] row : aliens) {
+            for (Alien a : row) {
+                if (a.alive) {
+                    return false; // At least one alien still alive
+                }
+            }
+        }
+
+        return true; // All aliens destroyed - player won
+    }
+
     // Inner classes
     public static class Alien {
         public int x, y;

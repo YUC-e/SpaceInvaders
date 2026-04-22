@@ -115,15 +115,18 @@ public class GameModel {
         // Check collisions
         // Player bullet vs aliens
         if (playerBullet != null) {
+            boolean bulletHit = false;
             for (Alien[] row : aliens) {
                 for (Alien a : row) {
                     if (a.alive && Math.abs(a.x - playerBullet.x) < ALIEN_WIDTH && Math.abs(a.y - playerBullet.y) < ALIEN_HEIGHT) {
                         a.alive = false;
                         playerBullet = null;
                         score += 10;
+                        bulletHit = true;
                         break;
                     }
                 }
+                if (bulletHit) break;
             }
         }
 

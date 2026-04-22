@@ -20,6 +20,11 @@ public class GameView extends JPanel {
         setBackground(Color.BLACK);
     }
 
+    // Setter to update the model reference (used for game reset)
+    public void setModel(GameModel newModel) {
+        this.model = newModel;
+    }
+
     // Override paintComponent to draw the game
     @Override
     protected void paintComponent(Graphics g) {
@@ -120,24 +125,6 @@ public class GameView extends JPanel {
     }
 
     private boolean isGameOver() {
-        if (model.getLives() <= 0) {
-            return true; // Player lost all lives
-        }
-
-        // Check if all aliens are destroyed
-        boolean allAliensDestroyed = true;
-        for (GameModel.Alien[] row : model.getAliens()) {
-            for (GameModel.Alien a : row) {
-                if (a.alive) {
-                    allAliensDestroyed = false;
-                    break;
-                }
-            }
-            if (!allAliensDestroyed) {
-                break;
-            }
-        }
-
-        return allAliensDestroyed && !model.getAliens()[0][0].alive; // All aliens destroyed and at least one alien existed
+        return model.isGameOver();
     }
 }

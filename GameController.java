@@ -29,10 +29,10 @@ public class GameController {
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        frame.setFocusable(true);
 
-        // Set up key listener for player input
-        frame.addKeyListener(new KeyAdapter() {
+        // Set up key listener on view and ensure it can receive focus
+        view.setFocusable(true);
+        view.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 handleKeyPress(e.getKeyCode());
@@ -53,6 +53,7 @@ public class GameController {
             }
         });
         gameLoop.start();
+        view.requestFocus();
     }
 
     private void handleKeyPress(int keyCode) {
@@ -66,7 +67,35 @@ public class GameController {
             case KeyEvent.VK_SPACE:
                 model.firePlayerBullet();
                 break;
+            case KeyEvent.VK_R:
+                resetGame();
+                break;
         }
+    }
+
+    private void resetGame() {
+        // Stop the current game loop
+        gameLoop.stop();
+
+        // Create a new model and update the view
+        model = new GameModel();
+        view.setModel(model);
+
+        // Restart the game loop
+        gameLoop = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model.update();
+                view.repaint();
+
+                // Stop the game loop when the game is over
+                if (model.isGameOver()) {
+                    gameLoop.stop();
+                }
+            }
+        });
+        gameLoop.start();
+        view.requestFocus();
     }
 
     // Main method to start the game

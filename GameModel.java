@@ -22,6 +22,9 @@ public class GameModel {
     private static final int SHIELD_HEALTH = 3;
     private static final int POWERUP_SPEED = 2;
     private static final int POWERUP_RADIUS = 8;
+    private static final int ABILITY_DURATION = 300; // frames (5 seconds at 60 FPS)
+    private static final String ABILITY_RAPID_FIRE = "RAPID_FIRE";
+    private static final int RAPID_FIRE_COOLDOWN = 10; // frames between shots during rapid fire
 
     private int playerX = WIDTH / 2;
     private Alien[][] aliens = new Alien[5][11];
@@ -33,6 +36,9 @@ public class GameModel {
     private int lives = 3;
     private int alienDirection = 1;
     private Random random = new Random();
+    private String activePowerUpAbility = null;
+    private int abilityDurationRemaining = 0;
+    private int bulletCooldown = 0;
 
     public GameModel() {
         // Initialize alien formation
@@ -62,12 +68,33 @@ public class GameModel {
     }
 
     public void firePlayerBullet() {
-        if (playerBullet == null) {
-            playerBullet = new Bullet(playerX + PLAYER_WIDTH / 2, HEIGHT - 50, true);
+        if (bulletCooldown <= 0) {
+            if (ABILITY_RAPID_FIRE.equals(activePowerUpAbility)) {
+                // Rapid fire: shoot with cooldown to space bullets
+                playerBullet = new Bullet(playerX + PLAYER_WIDTH / 2, HEIGHT - 50, true);
+                bulletCooldown = RAPID_FIRE_COOLDOWN;
+            } else if (playerBullet == null) {
+                // Normal mode: shoot only when no bullet exists
+                playerBullet = new Bullet(playerX + PLAYER_WIDTH / 2, HEIGHT - 50, true);
+            }
         }
     }
 
     public void update() {
+        // Update bullet cooldown
+        if (bulletCooldown > 0) {
+            bulletCooldown--;
+        }
+
+        // Update ability duration
+        if (activePowerUpAbility != null) {
+            abilityDurationRemaining--;
+            if (abilityDurationRemaining <= 0) {
+                activePowerUpAbility = null;
+                abilityDurationRemaining = 0;
+            }
+        }
+
         // Advance player bullet
         if (playerBullet != null) {
             playerBullet.y -= BULLET_SPEED;
@@ -211,7 +238,8 @@ public class GameModel {
         for (PowerUp p : powerUps) {
             if (Math.abs(p.x - (playerX + PLAYER_WIDTH / 2)) < PLAYER_WIDTH + POWERUP_RADIUS && 
                 Math.abs(p.y - (HEIGHT - 50)) < 20 + POWERUP_RADIUS) {
-                // Player collected power-up
+                // Player collected power-up - activate ability
+                activateAbility(p.ability);
                 powerUpsToRemove.add(p);
             }
         }
@@ -243,6 +271,14 @@ public class GameModel {
         return powerUps;
     }
 
+    public String getActivePowerUpAbility() {
+        return activePowerUpAbility;
+    }
+
+    public int getAbilityDurationRemaining() {
+        return abilityDurationRemaining;
+    }
+
     public int getScore() {
         return score;
     }
@@ -266,6 +302,11 @@ public class GameModel {
         }
 
         return true; // All aliens destroyed - player won
+    }
+
+    private void activateAbility(String ability) {
+        activePowerUpAbility = ability;
+        abilityDurationRemaining = ABILITY_DURATION;
     }
 
     // Inner classes
@@ -303,10 +344,13 @@ public class GameModel {
 
     public static class PowerUp {
         public int x, y;
+        public String ability;
 
         public PowerUp(int x, int y) {
             this.x = x;
             this.y = y;
+            // Randomly assign ability (currently only RAPID_FIRE, but ready for expansion)
+            this.ability = ABILITY_RAPID_FIRE;
         }
     }
 }

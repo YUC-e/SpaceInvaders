@@ -130,6 +130,13 @@ public class GameView extends JPanel {
         g.setFont(new Font("Arial", Font.PLAIN, 16));
         g.drawString("Score: " + model.getScore(), 10, 20);
         g.drawString("Lives: " + model.getLives(), 10, 40);
+
+        // Draw active ability if any
+        if (model.getActivePowerUpAbility() != null) {
+            g.setColor(Color.CYAN);
+            int durationSeconds = Math.max(0, (model.getAbilityDurationRemaining() + 29) / 60); // Round up to nearest second
+            g.drawString("RAPID FIRE: " + durationSeconds + "s", 10, 60);
+        }
     }
 
     private void drawGameOverMessage(Graphics g) {

@@ -15,7 +15,7 @@ public class GameModel {
     private static final int ALIEN_HEIGHT = 20;
     private static final int PLAYER_SPEED = 5;
     private static final int BULLET_SPEED = 10;
-    private static final int ALIEN_MOVE_SPEED = 2;
+    private static final int ALIEN_MOVE_SPEED = 1;
     private static final int ALIEN_DROP = 10;
     private static final int SHIELD_WIDTH = 40;
     private static final int SHIELD_HEIGHT = 30;

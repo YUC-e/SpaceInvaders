@@ -21,3 +21,6 @@ In GameModel.java, add a list of shield rectangles positioned between the player
 
 Prompt:
 In GameController.java, change the timer set in gameLoop to be faster to make the game feel more smooth.
+
+Prompt:
+In GameModel.java, Update the aliens move speed to compensate for the increased frame rate. Slow them down to give the player more time to elimenate them

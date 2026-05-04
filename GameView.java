@@ -39,6 +39,9 @@ public class GameView extends JPanel {
         // Draw shields
         drawShields(g);
 
+        // Draw power-ups
+        drawPowerUps(g);
+
         // Draw player bullet
         drawPlayerBullet(g);
 
@@ -92,6 +95,17 @@ public class GameView extends JPanel {
             // Draw outline
             g.setColor(Color.WHITE);
             g.drawRect(s.x, s.y, 40, 30);
+        }
+    }
+
+    private void drawPowerUps(Graphics g) {
+        g.setColor(Color.BLUE);
+        for (GameModel.PowerUp p : model.getPowerUps()) {
+            g.fillOval(p.x - 8, p.y - 8, 16, 16);
+            // Draw outline for better visibility
+            g.setColor(Color.CYAN);
+            g.drawOval(p.x - 8, p.y - 8, 16, 16);
+            g.setColor(Color.BLUE);
         }
     }
 

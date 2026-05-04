@@ -18,13 +18,16 @@ public class GameModel {
     private static final int ALIEN_MOVE_SPEED = 1;
     private static final int ALIEN_DROP = 10;
     private static final int SHIELD_WIDTH = 40;
-    private static final int SHIELD_HEIGHT = 30;
+    private static final int SHIELD_HEIGHT = 15;
     private static final int SHIELD_HEALTH = 3;
+    private static final int POWERUP_SPEED = 2;
+    private static final int POWERUP_RADIUS = 8;
 
     private int playerX = WIDTH / 2;
     private Alien[][] aliens = new Alien[5][11];
     private Bullet playerBullet = null;
     private List<Bullet> alienBullets = new ArrayList<>();
+    private List<PowerUp> powerUps = new ArrayList<>();
     private List<Shield> shields = new ArrayList<>();
     private int score = 0;
     private int lives = 3;
@@ -83,6 +86,16 @@ public class GameModel {
         }
         alienBullets.removeAll(toRemove);
 
+        // Advance power-ups
+        List<PowerUp> powerUpsToRemove = new ArrayList<>();
+        for (PowerUp p : powerUps) {
+            p.y += POWERUP_SPEED;
+            if (p.y > HEIGHT) {
+                powerUpsToRemove.add(p);
+            }
+        }
+        powerUps.removeAll(powerUpsToRemove);
+
         // Move aliens
         boolean hitEdge = false;
         for (Alien[] row : aliens) {
@@ -132,6 +145,10 @@ public class GameModel {
                         a.alive = false;
                         playerBullet = null;
                         score += 10;
+                        // 30% chance to drop power-up when alien is killed
+                        if (random.nextInt(100) < 30) {
+                            powerUps.add(new PowerUp(a.x + ALIEN_WIDTH / 2, a.y + ALIEN_HEIGHT));
+                        }
                         bulletHit = true;
                         break;
                     }
@@ -188,6 +205,17 @@ public class GameModel {
             }
         }
         alienBullets.removeAll(toRemove);
+
+        // Power-ups vs player
+        powerUpsToRemove.clear();
+        for (PowerUp p : powerUps) {
+            if (Math.abs(p.x - (playerX + PLAYER_WIDTH / 2)) < PLAYER_WIDTH + POWERUP_RADIUS && 
+                Math.abs(p.y - (HEIGHT - 50)) < 20 + POWERUP_RADIUS) {
+                // Player collected power-up
+                powerUpsToRemove.add(p);
+            }
+        }
+        powerUps.removeAll(powerUpsToRemove);
     }
 
     // Getters for view access
@@ -209,6 +237,10 @@ public class GameModel {
 
     public List<Shield> getShields() {
         return shields;
+    }
+
+    public List<PowerUp> getPowerUps() {
+        return powerUps;
     }
 
     public int getScore() {
@@ -266,6 +298,15 @@ public class GameModel {
             this.x = x;
             this.y = y;
             this.health = health;
+        }
+    }
+
+    public static class PowerUp {
+        public int x, y;
+
+        public PowerUp(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }

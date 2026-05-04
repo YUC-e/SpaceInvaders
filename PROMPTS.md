@@ -24,3 +24,13 @@ In GameController.java, change the timer set in gameLoop to be faster to make th
 
 Prompt:
 In GameModel.java, Update the aliens move speed to compensate for the increased frame rate. Slow them down to give the player more time to elimenate them
+
+Prompt:
+In GameModel.java, update the shields to be more thin for visual clarity
+
+Prompt:
+In GameModel.java, add a power-up mechanic that drops from the alien. Have this power-up travel like an alien bullet but slower so the player can reach them in time. Do not add any abilities yet. Have the power-up be a blue circle.
+
+// I had to follow this prompt up with a fix because Claude had the power-ups randomly fall from aliens instead of when the player kills an alien.
+
+Prompt:

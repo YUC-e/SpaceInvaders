@@ -17,6 +17,8 @@ public class ModelTester {
         testBulletRemovedWhenReachingTop();
         testDestroyingAlienIncreasesScore();
         testLosingAllLivesTriggersGameOver();
+        testShieldsReduceHealthWhenHit();
+        testShieldsRemovedWhenHealthZero();
 
         System.out.println("\n=== Summary ===");
         System.out.println("Tests run: " + testsRun);
@@ -216,6 +218,83 @@ public class ModelTester {
             testsPassed++;
         } else {
             System.out.println("FAIL: " + testName + " (lives: " + finalLives + ", game over: " + gameOver + ")");
+        }
+    }
+
+    // Test 7: Shields reduce health when hit
+    private static void testShieldsReduceHealthWhenHit() {
+        String testName = "Shields reduce health when hit";
+        testsRun++;
+
+        GameModel model = new GameModel();
+
+        // Get the first shield
+        java.util.List<GameModel.Shield> shields = model.getShields();
+        if (shields.isEmpty()) {
+            System.out.println("FAIL: " + testName + " (no shields in game)");
+            return;
+        }
+
+        GameModel.Shield targetShield = shields.get(0);
+        int initialHealth = targetShield.health;
+
+        // Fire a bullet and position it at the shield
+        model.firePlayerBullet();
+        GameModel.Bullet bullet = model.getPlayerBullet();
+        if (bullet != null) {
+            bullet.x = targetShield.x + 20;
+            bullet.y = targetShield.y + 15;
+        }
+
+        // Call update to process collision
+        model.update();
+
+        int finalHealth = targetShield.health;
+
+        if (finalHealth < initialHealth) {
+            System.out.println("PASS: " + testName + " (health: " + initialHealth + " -> " + finalHealth + ")");
+            testsPassed++;
+        } else {
+            System.out.println("FAIL: " + testName + " (health unchanged: " + finalHealth + ")");
+        }
+    }
+
+    // Test 8: Shields are removed when health reaches zero
+    private static void testShieldsRemovedWhenHealthZero() {
+        String testName = "Shields removed when health reaches zero";
+        testsRun++;
+
+        GameModel model = new GameModel();
+
+        // Get the first shield
+        java.util.List<GameModel.Shield> shields = model.getShields();
+        if (shields.isEmpty()) {
+            System.out.println("FAIL: " + testName + " (no shields in game)");
+            return;
+        }
+
+        GameModel.Shield targetShield = shields.get(0);
+        int initialShieldCount = shields.size();
+
+        // Deal enough damage to destroy the shield (health = 3)
+        java.util.List<GameModel.Bullet> alienBullets = model.getAlienBullets();
+        for (int i = 0; i < 3; i++) {
+            alienBullets.add(new GameModel.Bullet(targetShield.x + 20, targetShield.y + 15, false));
+        }
+
+        // Call update to process collisions
+        for (int i = 0; i < 5; i++) {
+            model.update();
+        }
+
+        int finalShieldCount = model.getShields().size();
+        boolean shieldDestroyed = finalShieldCount < initialShieldCount;
+
+        if (shieldDestroyed) {
+            System.out.println("PASS: " + testName + " (shields: " + initialShieldCount + " -> " + finalShieldCount + ")");
+            testsPassed++;
+        } else {
+            System.out.println("FAIL: " + testName + " (shield count unchanged: " + finalShieldCount + ")");
         }
     }
 }

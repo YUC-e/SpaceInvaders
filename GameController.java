@@ -39,8 +39,8 @@ public class GameController {
             }
         });
 
-        // Set up game loop (50ms = 20 FPS)
-        gameLoop = new Timer(50, new ActionListener() {
+        // Set up game loop (16ms = 60 FPS)
+        gameLoop = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.update();
@@ -82,7 +82,7 @@ public class GameController {
         view.setModel(model);
 
         // Restart the game loop
-        gameLoop = new Timer(50, new ActionListener() {
+        gameLoop = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.update();

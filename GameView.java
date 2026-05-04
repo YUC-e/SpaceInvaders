@@ -36,6 +36,9 @@ public class GameView extends JPanel {
         // Draw aliens
         drawAliens(g);
 
+        // Draw shields
+        drawShields(g);
+
         // Draw player bullet
         drawPlayerBullet(g);
 
@@ -72,6 +75,23 @@ public class GameView extends JPanel {
                     g.setColor(Color.RED);
                 }
             }
+        }
+    }
+
+    private void drawShields(Graphics g) {
+        for (GameModel.Shield s : model.getShields()) {
+            // Color based on health: green (3), yellow (2), red (1)
+            if (s.health == 3) {
+                g.setColor(Color.GREEN);
+            } else if (s.health == 2) {
+                g.setColor(Color.YELLOW);
+            } else {
+                g.setColor(Color.RED);
+            }
+            g.fillRect(s.x, s.y, 40, 30);
+            // Draw outline
+            g.setColor(Color.WHITE);
+            g.drawRect(s.x, s.y, 40, 30);
         }
     }
 

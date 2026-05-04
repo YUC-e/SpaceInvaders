@@ -17,11 +17,15 @@ public class GameModel {
     private static final int BULLET_SPEED = 10;
     private static final int ALIEN_MOVE_SPEED = 2;
     private static final int ALIEN_DROP = 10;
+    private static final int SHIELD_WIDTH = 40;
+    private static final int SHIELD_HEIGHT = 30;
+    private static final int SHIELD_HEALTH = 3;
 
     private int playerX = WIDTH / 2;
     private Alien[][] aliens = new Alien[5][11];
     private Bullet playerBullet = null;
     private List<Bullet> alienBullets = new ArrayList<>();
+    private List<Shield> shields = new ArrayList<>();
     private int score = 0;
     private int lives = 3;
     private int alienDirection = 1;
@@ -33,6 +37,12 @@ public class GameModel {
             for (int col = 0; col < 11; col++) {
                 aliens[row][col] = new Alien(50 + col * 50, 50 + row * 30);
             }
+        }
+
+        // Initialize shields positioned between aliens and player
+        int shieldSpacing = WIDTH / 5;
+        for (int i = 0; i < 4; i++) {
+            shields.add(new Shield(shieldSpacing * (i + 1) - SHIELD_WIDTH / 2, 350, SHIELD_HEALTH));
         }
     }
 
@@ -130,6 +140,45 @@ public class GameModel {
             }
         }
 
+        // Player bullet vs shields
+        if (playerBullet != null) {
+            boolean shieldHit = false;
+            for (Shield s : shields) {
+                if (Math.abs(s.x + SHIELD_WIDTH / 2 - playerBullet.x) < SHIELD_WIDTH / 2 && 
+                    Math.abs(s.y + SHIELD_HEIGHT / 2 - playerBullet.y) < SHIELD_HEIGHT / 2) {
+                    s.health--;
+                    playerBullet = null;
+                    shieldHit = true;
+                    break;
+                }
+            }
+        }
+
+        // Alien bullets vs shields
+        toRemove.clear();
+        List<Shield> shieldsToRemove = new ArrayList<>();
+        for (Bullet b : alienBullets) {
+            boolean bulletHit = false;
+            for (Shield s : shields) {
+                if (Math.abs(s.x + SHIELD_WIDTH / 2 - b.x) < SHIELD_WIDTH / 2 && 
+                    Math.abs(s.y + SHIELD_HEIGHT / 2 - b.y) < SHIELD_HEIGHT / 2) {
+                    s.health--;
+                    toRemove.add(b);
+                    bulletHit = true;
+                    break;
+                }
+            }
+        }
+        alienBullets.removeAll(toRemove);
+
+        // Remove destroyed shields
+        for (Shield s : shields) {
+            if (s.health <= 0) {
+                shieldsToRemove.add(s);
+            }
+        }
+        shields.removeAll(shieldsToRemove);
+
         // Alien bullets vs player
         toRemove.clear();
         for (Bullet b : alienBullets) {
@@ -156,6 +205,10 @@ public class GameModel {
 
     public List<Bullet> getAlienBullets() {
         return alienBullets;
+    }
+
+    public List<Shield> getShields() {
+        return shields;
     }
 
     public int getScore() {
@@ -202,6 +255,17 @@ public class GameModel {
             this.x = x;
             this.y = y;
             this.isPlayer = isPlayer;
+        }
+    }
+
+    public static class Shield {
+        public int x, y;
+        public int health;
+
+        public Shield(int x, int y, int health) {
+            this.x = x;
+            this.y = y;
+            this.health = health;
         }
     }
 }
